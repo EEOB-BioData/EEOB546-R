@@ -32,9 +32,13 @@ keypoints:
 
 ## Introduction to R
 
-R is a system for statistical computation and graphics. It provides, 
-among other things, a programming language, high level graphics, 
-interfaces to other languages and debugging facilities.  
+### What is R?
+- R is a free language and environment for statistical computing and graphics
+- R is an interpreted language, not a compiled one, meaning that all commands 
+typed on the keyboard are directly executed without requiring to build a complete 
+program.
+- R has existed for over 30 years
+- R is modular — most functionality is from add-on packages.
 
 As a programming language, R adopts syntax and grammar that differ from 
 many other languages: objects in R are ‘vectors’, and functions are 
@@ -77,7 +81,7 @@ results. You can use multiple languages including R, Python, and SQL.
 > ## Tip: Creating an R Markdown document
 >
 > You can create a new R Markdown document in RStudio with the menu command 
-> _File -> New File -> RMarkdown_. A new windows opens and asks you to enter 
+> File -> New File -> RMarkdown_. A new windows opens and asks you to enter 
 > title, author, and default output format for your R Markdown document. After 
 > you enter this information, a new R Markdown file opens in a new tab.  
 > Notice that the file contains three types of content: 
@@ -96,8 +100,8 @@ results. You can use multiple languages including R, Python, and SQL.
 > 3. hit Ctrl-Enter in Windows or Linux or Command-Enter on OS X.   
 {: .callout}
 
-
-## Using R as a calculator
+## Arithmetic operations
+### Using R as a calculator
 
 The simplest thing you could do with R is do arithmetic:
 
@@ -114,8 +118,8 @@ The simplest thing you could do with R is do arithmetic:
 ~~~
 {: .output}
 
-And R will print out the answer, with a preceding "[1]". Don't worry about this
-for now, we'll explain that later. For now think of it as indicating output.
+And R will print out the answer, with a preceding "[1]". We'll talk about this 
+"[1]" later.
 
 Like bash, if you type in an incomplete command, R will wait for you to
 complete it:
@@ -147,25 +151,28 @@ prompt.
 When using R as a calculator, the order of operations is the same as you
 would have learned back in school.
 
-From highest to lowest precedence:
+Here is a list of arithmetic operators available in R from highest to lowest 
+precedence:
 
- * Parentheses: `(`, `)`
- * Exponents: `^` or `**`
- * Divide: `/`
- * Multiply: `*`
- * Add: `+`
- * Subtract: `-`
+| Operator    | Description  |
+|:------------|:-------------|
+|	( )	     | Parentheses  |
+|  `^` or `**`| Exponents    |
+| `/`	        | Divide       |
+| `*`	        | Multiply     |
+| `-`	        | Subtract     |
+
 
 
 ~~~
-3 + 5 * 2
+3 + 5 * 2^5
 ~~~
 {: .language-r}
 
 
 
 ~~~
-[1] 13
+[1] 163
 ~~~
 {: .output}
 
@@ -175,27 +182,16 @@ intend.
 
 
 ~~~
-(3 + 5) * 2
+((3 + 5) * 2)^5
 ~~~
 {: .language-r}
 
 
 
 ~~~
-[1] 16
+[1] 1048576
 ~~~
 {: .output}
-
-This can get unwieldy when not needed, but  clarifies your intentions.
-Remember that others may later read your code.  
-
-
-~~~
-(3 + (5 * (2 ^ 2))) # hard to read
-3 + 5 * 2 ^ 2       # clear, if you remember the rules
-3 + 5 * (2 ^ 2)     # if you forget some rules, this might help
-~~~
-{: .language-r}
 
 The text after each line of code is called a
 "comment". Anything that follows after the hash (or octothorpe) symbol
@@ -241,10 +237,26 @@ we simply type its name, followed by  open and closing parentheses.
 Anything we type inside the parentheses is called the function's
 arguments:
 
+| Function    | Description  |
+|:------------|:-------------|
+| `log(x)`    | Natural log  |
+| `exp(x)`    | Exponential  |
+| `max(x)`    | Max. value   | 
+| `min(x)`    | Min. value   |  
+|`round(x, n)`| Round to n decimal places|
+| `rank(x)`   | Rank of elements |
+| `cor(x, y)` | Correlation  | 
+| `sum(x)`    | Sum          |
+| `mean(x)`   | Mean         |
+| `median(x)` | Median       |
+|`quantile(x)`| % quantiles  |
+| `var(x)`    | The variance |
+| `sd(x)`     | The standard deviation|
+
+
 
 ~~~
-# trigonometry functions
-sin(1)  
+sin(1); # trigonometry functions
 ~~~
 {: .language-r}
 
@@ -258,8 +270,7 @@ sin(1)
 
 
 ~~~
-# natural logarithm
-log(1)  
+log(1); # natural logarithm  
 ~~~
 {: .language-r}
 
@@ -273,23 +284,7 @@ log(1)
 
 
 ~~~
-# base-10 logarithm
-log10(10) 
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] 1
-~~~
-{: .output}
-
-
-
-~~~
-# natural exponential function
-exp(0.5) # e^(1/2)
+exp(0.5); # natural exponential function
 ~~~
 {: .language-r}
 
@@ -300,44 +295,39 @@ exp(0.5) # e^(1/2)
 ~~~
 {: .output}
 
+
+
+~~~
+# etc.
+~~~
+{: .language-r}
+
 Don't worry about trying to remember every function in R. You
 can simply look them up on Google, or if you can remember the
 start of the function's name, use the tab completion in RStudio.
-
-This is one advantage that RStudio has over R on its own, it
-has auto-completion abilities that allow you to more easily
-look up functions, their arguments, and the values that they
-take.
 
 Typing a `?` before the name of a command will open the help page
 for that command. As well as providing a detailed description of
 the command and how it works, scrolling to the bottom of the
 help page will usually show a collection of code examples which
-illustrate command usage. We'll go through an example later.
+illustrate command usage.
 
-## Comparing things
+## R Relational Operators
 
 We can also do comparison in R:
 
-
-~~~
-# equality (note two equals signs, read as "is equal to")
-1 == 1  
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-
+| Operator | Description  |
+|:---------|:-------------|
+|	<	     | Less than    |
+|  >	     | Greater than |
+| <=	     | Less than or equal to |
+| >=	     | Greater than or equal to |
+| ==	     | Equal to     |
+| !=	     | Not equal to |
 
 
 ~~~
-# inequality (read as "is not equal to")
-1 != 2  
+1 == 1; # equality (note two equals signs, read as "is equal to")  
 ~~~
 {: .language-r}
 
@@ -351,8 +341,21 @@ We can also do comparison in R:
 
 
 ~~~
-# less than
-1 <  2  
+1 != 1; # inequality (read as "is not equal to") 
+~~~
+{: .language-r}
+
+
+
+~~~
+[1] FALSE
+~~~
+{: .output}
+
+
+
+~~~
+1 <  2; # less than  
 ~~~
 {: .language-r}
 
@@ -366,51 +369,46 @@ We can also do comparison in R:
 
 
 ~~~
-# less than or equal to
-1 <= 1  
+# etc
 ~~~
 {: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-
-
-
-~~~
-# greater than
-1 > 0  
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-
-
-
-~~~
-# greater than or equal to
-1 >= -9 
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
 
 
 > ## Tip: Comparing Numbers
 >
+> Let's compare `0.1 + 0.2` and `0.3`. What do you think?
+>  
+>  ~~~
+>  0.1 + 0.2 == 0.3
+>  ~~~
+>  {: .language-r}
+>  
+>  
+>  
+>  ~~~
+>  [1] FALSE
+>  ~~~
+>  {: .output}
+> What's happened?   
+> Computers may only represent decimal numbers with a
+> certain degree of precision, so two numbers which look
+> the same when printed out by R, may actually have
+> different underlying representations and therefore be
+> different by a small margin of error (called Machine
+> numeric tolerance).
+> So, unless you compare two integers, you should use the `all.equal` function:
+>  
+>  ~~~
+>  all.equal(0.1 + 0.2, 0.3)
+>  ~~~
+>  {: .language-r}
+>  
+>  
+>  
+>  ~~~
+>  [1] TRUE
+>  ~~~
+>  {: .output}
 >
 > Further reading: [http://floating-point-gui.de/](http://floating-point-gui.de/)
 >
@@ -519,17 +517,38 @@ But this is much less common among R users. So the recommendation is to use `<-`
 > If R complains that the object *text* does not exist, you probably forgot to 
 > use the quotes!
 >
-{: .callout}
 
+> ## Reserved words
+> Reserved words in R programming are a set of words that have special meaning 
+> and cannot be used as an identifier (variable name, function name etc.).
+> To view the list of reserved words you can type `help(reserved)` or `?reserved`
+> at the R command prompt as follows.
+> 
+> ~~~
+> ?reserved
+> ~~~
+> {: .language-r}
+{: .callout}
 
 ## Vectorization
 
 One final thing to be aware of is that R is *vectorized*, meaning that
-variables and functions can have vectors as values. For example
+variables and functions can have vectors as values. We can create vectors using 
+several commands:
+
+| Command             | Description                                 |
+|:--------------------|:--------------------------------------------|
+| `c(2, 4, 6)`        | Join elements into a vector                 |
+| `1:5`               | Create an integer sequence                  |
+| `seq(2, 3, by=0.5)` | Create a sequence with a specific increment |
+| `rep(1:2, times=3)` | Repeat a vector                             |
+| `rep(1:2, each=3)`  | Repeat elements of a vector                 |
+
+... and then utilize them in functions and store in variables:
 
 
 ~~~
-1:5
+1:5;
 ~~~
 {: .language-r}
 
@@ -543,7 +562,7 @@ variables and functions can have vectors as values. For example
 
 
 ~~~
-2^(1:5)
+2^(1:5);
 ~~~
 {: .language-r}
 
@@ -557,8 +576,8 @@ variables and functions can have vectors as values. For example
 
 
 ~~~
-x <- 1:5
-2^x
+x <- 1:5;
+2^x;
 ~~~
 {: .language-r}
 
@@ -571,7 +590,6 @@ x <- 1:5
 
 This is incredibly powerful; we will discuss this further in an
 upcoming lesson.
-
 
 ## Managing your environment
 
@@ -646,7 +664,7 @@ function (name, pos = -1L, envir = as.environment(pos), all.names = FALSE,
     }
     else all.names
 }
-<bytecode: 0x7fb3bbf28b58>
+<bytecode: 0x7fa5ecb4a758>
 <environment: namespace:base>
 ~~~
 {: .output}
@@ -671,24 +689,6 @@ rm(list = ls())
 In this case we've combined the two. Like the order of operations, anything
 inside the innermost parentheses is evaluated first, and so on.
 
-In this case we've specified that the results of `ls` should be used for the
-`list` argument in `rm`. When assigning values to arguments by name, you *must*
-use the `=` operator!!
-
-If instead we use `<-`, there will be unintended side effects, or you may get an error message:
-
-
-~~~
-rm(list <- ls())
-~~~
-{: .language-r}
-
-
-
-~~~
-Error in rm(list <- ls()): ... must contain names or character strings
-~~~
-{: .error}
 
 > ## Tip: Warnings vs. Errors
 >
