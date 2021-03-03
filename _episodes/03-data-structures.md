@@ -12,21 +12,24 @@ objectives:
 - "To begin exploring data frames, and understand how it's related to vectors, factors and lists."
 - "To be able to ask questions from R about the type, class, and structure of an object."
 keypoints:
-- "The basic data types in R are double, integer, complex, logical, and character."
-- "Use factors to represent categories in R."
-- "Indexing in R starts at 1, not 0."
+- "Atomic vectors are usually created with `c()`, short for combine;"
+- "Lists are constructed by using `list()`;"
+- "Data frames are created with `data.frame()`, which takes named vectors as input;"
+- "The basic data types in R are double, integer, complex, logical, and character;"
+- "All objects can have arbitrary additional attributes, used to store metadata about the object;"
+- "Adding a `dim()` attribute to an atomic vector creates a multi-dimensional array;"
 ---
 
 
 
-**Disclaimer:** This tutorial is based on an excellent book [Advanced R.](https://github.com/hadley/adv-r)
+**Disclaimer:** This lesson is based on a chapter from the [Advanced R](https://github.com/hadley/adv-r) book.
 
 
 # Data structures {#data-structures}
 
-
-R's base data structures can be organised by their dimensionality (1d, 2d, or nd) and whether they're homogeneous 
-(all contents must be of the same type) or heterogeneous (the contents can be of different types): 
+R's base data structures can be organized by their dimensionality (1d, 2d, or nd) 
+and whether they're homogeneous (all contents must be of the same type) or 
+heterogeneous (the contents can be of different types): 
 
 |    | Homogeneous   | Heterogeneous |
 |----|---------------|---------------|
@@ -35,23 +38,29 @@ R's base data structures can be organised by their dimensionality (1d, 2d, or nd
 | nd | Array         |               |
 
 Almost all other objects are built upon these foundations. 
-Note that R has no 0-dimensional, or scalar types. Individual numbers or strings are vectors of length one. 
+Note that R has no 0-dimensional, or scalar types. Individual numbers or strings 
+are vectors of length one. 
 
-Given an object, the best way to understand what data structures it's composed of is to use `str()`. `str()` is short for structure and it gives a compact, human readable description of any R data structure.
+Given an object, the best way to understand what data structures it's composed 
+of is to use `str()`. `str()` is short for structure and it gives a compact, 
+human readable description of any R data structure.
 
 ## Vectors {#vectors}
 
-The basic data structure in R is the vector. Vectors come in two flavours: atomic vectors and lists. They have three common properties:
+The basic data structure in R is the vector. Vectors come in two flavors: 
+atomic vectors and lists. They have three common properties:
 
 * Type, `typeof()`, what it is.
 * Length, `length()`, how many elements it contains.
 * Attributes, `attributes()`, additional arbitrary metadata.
 
-They differ in the types of their elements: all elements of an atomic vector must be the same type, whereas the elements of a list can have different types.
+They differ in the types of their elements: all elements of an atomic vector 
+must be the same type, whereas the elements of a list can have different types.
 
 ### Atomic vectors
 
-There are four common types of atomic vectors : **logical**, **integer**, **double** (often called numeric), and **character**.
+There are four common types of atomic vectors : **logical**, **integer**, 
+**double** (often called numeric), and **character**.
 
 Atomic vectors are usually created with `c()`, short for combine.
 
@@ -68,11 +77,16 @@ chr_var <- c("these are", "some strings")
 
 Atomic vectors are always flat, even if you nest `c()`'s: Try `c(1, c(2, c(3, 4)))`
 
-Missing values are specified with `NA`, which is a logical vector of length 1. `NA` will always be coerced to the correct type if used inside `c()`.
+Missing values are specified with `NA`, which is a logical vector of length 1. 
+`NA` will always be coerced to the correct type if used inside `c()`.
 
 #### Coercion
 
-All elements of an atomic vector must be the same type, so when you attempt to combine different types they will be __coerced__ to the most flexible type. The coercion rules go: `logical` -> `integer` -> `double` -> `complex` -> `character`, where -> can be read as *are transformed into*. You can try to force coercion against this flow using the `as.` functions:
+All elements of an atomic vector must be the same type, so when you attempt to 
+combine different types they will be __coerced__ to the most flexible type. The 
+coercion rules go: `logical` -> `integer` -> `double` -> `complex` -> `character`, 
+where -> can be read as *are transformed into*. You can try to force coercion 
+against this flow using the `as.` functions:
 
 
 > ## Challenge 1
@@ -125,7 +139,8 @@ All elements of an atomic vector must be the same type, so when you attempt to c
 > {: .solution}
 {: .challenge}
 
-When a logical vector is coerced to an integer or double, `TRUE` becomes 1 and `FALSE` becomes 0. This is very useful in conjunction with `sum()` and `mean()`
+When a logical vector is coerced to an integer or double, `TRUE` becomes 1 and `FALSE` becomes 0. 
+This is very useful in conjunction with `sum()` and `mean()`
 
 
 ~~~
@@ -269,108 +284,6 @@ List of 4
 
 The `typeof()` a list is `list`. You can test for a list with `is.list()` and coerce to a list with `as.list()`. You can turn a list into an atomic vector with `unlist()`. If the elements of a list have different types, `unlist()` uses the same coercion rules as `c()`.
 
-Lists are used to build up many of the more complicated data structures in R. For example, both data frames and linear models objects (as produced by `lm()`) are lists:
-
-
-~~~
-mtcars
-~~~
-{: .language-r}
-
-
-
-~~~
-                     mpg cyl  disp  hp drat    wt  qsec vs am gear carb
-Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
-Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
-Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
-Hornet 4 Drive      21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
-Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
-Valiant             18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
-Duster 360          14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
-Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
-Merc 230            22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
-Merc 280            19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
-Merc 280C           17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
-Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
-Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3
-Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3
-Cadillac Fleetwood  10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
-Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
-Chrysler Imperial   14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4
-Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
-Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
-Toyota Corolla      33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
-Toyota Corona       21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
-Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2
-AMC Javelin         15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2
-Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
-Pontiac Firebird    19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
-Fiat X1-9           27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
-Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
-Lotus Europa        30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
-Ford Pantera L      15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4
-Ferrari Dino        19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
-Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8
-Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
-~~~
-{: .output}
-
-
-
-~~~
-is.list(mtcars)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-
-
-
-~~~
-mod <- lm(mpg ~ wt, data = mtcars)
-mod
-~~~
-{: .language-r}
-
-
-
-~~~
-
-Call:
-lm(formula = mpg ~ wt, data = mtcars)
-
-Coefficients:
-(Intercept)           wt  
-     37.285       -5.344  
-~~~
-{: .output}
-
-
-
-~~~
-is.list(mod)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-> ## Callout
->
-> Where do these data come from?
->
-{: .callout}
-
-
 > ## Discussion 1
 >
 >
@@ -395,12 +308,17 @@ is.list(mod)
 > 1. Why is `1 == "1"` true? Why is `-1 < FALSE` true? Why is `"one" < 2` false?
 > 
 > 1. Why is the default missing value, `NA`, a logical vector? What's special
->    about logical vectors? (Hint: think about `c(FALSE, NA_character_)`.)
+>    about logical vectors? (Hint: think about `c(FALSE, NA)` vs. 
+>    `c(FALSE, NA_character_)`.)
 {: .discussion}
+
 
 ### Attributes {#attributes}
 
-All objects can have arbitrary additional attributes, used to store metadata about the object. Attributes can be thought of as a named list (with unique names). Attributes can be accessed individually with `attr()` or all at once (as a list) with `attributes()`.
+All objects can have arbitrary additional attributes, used to store metadata 
+about the object. Attributes can be thought of as a named list (with unique names). 
+Attributes can be accessed individually with `attr()` or all at once (as a list) 
+with `attributes()`.
 
 The three most important attributes:
 
@@ -412,7 +330,9 @@ The three most important attributes:
 
 * Class, used to implement the S3 object system.
  
-Each of these attributes has a specific accessor function to get and set values. When working with these attributes, use `names(x)`, `dim(x)`, and `class(x)`, not `attr(x, "names")`, `attr(x, "dim")`, and `attr(x, "class")`.
+Each of these attributes has a specific accessor function to get and set values. 
+When working with these attributes, use `names(x)`, `dim(x)`, and `class(x)`, 
+not `attr(x, "names")`, `attr(x, "dim")`, and `attr(x, "class")`.
 
 #### Names {#vector-names}
 
@@ -463,7 +383,9 @@ x <- setNames(x, c("a", "b", "c"))
 ~~~
 {: .language-r}
 
-Names don't have to be uniqueand not all elements of a vector need to have a name. If some names are missing, `names()` will return an empty string for those elements. If all names are missing, `names()` will return `NULL`.
+Names don't have to be unique and not all elements of a vector need to have a name. 
+If some names are missing, `names()` will return an empty string for those elements. 
+If all names are missing, `names()` will return `NULL`.
 
 
 ~~~
@@ -494,11 +416,16 @@ NULL
 ~~~
 {: .output}
 
-You can create a new vector without names using `unname(x)`, or remove names in place with `names(x) <- NULL`.
+You can create a new vector without names using `unname(x)`, or remove names in 
+place with `names(x) <- NULL`.
 
 #### Factors
 
-One important use of attributes is to define factors. A factor is a vector that can contain only predefined values, and is used to store categorical data. Factors are built on top of integer vectors using two attributes: the `class()`, "factor", which makes them behave differently from regular integer vectors, and the `levels()`, which defines the set of allowed values.
+One important use of attributes is to define factors. A factor is a vector that 
+can contain only predefined values, and is used to store categorical data. 
+Factors are built on top of integer vectors using two attributes: the `class()`, 
+"factor", which makes them behave differently from regular integer vectors, and 
+the `levels()`, which defines the set of allowed values.
 
 
 ~~~
@@ -618,7 +545,9 @@ class(c(x, factor("b")))
 ~~~
 {: .output}
 
-Factors are useful when you know the possible values a variable may take. Using a factor instead of a character vector makes it obvious when some groups contain no observations:
+Factors are useful when you know the possible values a variable may take. Using 
+a factor instead of a character vector makes it obvious when some groups contain 
+no observations:
 
 
 ~~~
@@ -654,11 +583,12 @@ m f
 ~~~
 {: .output}
 
-Factors crip up all over R, and occasionally cause headaches for new R users (see below).
+Factors crip up all over R, and occasionally cause headaches for new R users (R 4.0!).
 
 #### Matrices and arrays {#matrices-and-arrays}
 
-Adding a `dim()` attribute to an atomic vector allows it to behave like a multi-dimensional __array__. A special case of the array is the __matrix__, which has two dimensions. Matrices are used commonly as part of the mathematical machinery of statistics. Arrays are much rarer, but worth being aware of.
+Adding a `dim()` attribute to an atomic vector allows it to behave like a 
+multi-dimensional __array__. A special case of the array is the __matrix__, which has two dimensions. Matrices are used commonly as part of the mathematical machinery of statistics. Arrays are much rarer, but worth being aware of.
 
 Matrices and arrays are created with `matrix()` and `array()`, or by using the assignment form of `dim()`:
 
@@ -752,7 +682,11 @@ You can test if an object is a matrix or array using `is.matrix()` and `is.array
 
 ## Data frames {#data-frames}
 
-A data frame is the most common way of storing data in R, and if [used systematically](http://vita.had.co.nz/papers/tidy-data.pdf) makes data analysis easier. Under the hood, a data frame is a list of equal-length vectors. This makes it a 2-dimensional structure, so it shares properties of both the matrix and the list.
+A data frame is the most common way of storing data in R, and if 
+[used systematically](http://vita.had.co.nz/papers/tidy-data.pdf) makes data 
+analysis easier. Under the hood, a data frame is a list of equal-length vectors. 
+This makes it a 2-dimensional structure, so it shares properties of both the 
+matrix and the list.
 
 > ## Useful Data Frame Functions
 >
@@ -882,12 +816,10 @@ class(df)
 
 You can coerce an object to a data frame with `as.data.frame()`:
 
-* A vector will create a one-column data frame.
-
-* A list will create one column for each element; it's an error if they're 
+- A vector will create a one-column data frame.
+- A list will create one column for each element; it's an error if they're 
   not all the same length.
-  
-* A matrix will create a data frame with the same number of columns and rows as the matrix.
+- A matrix will create a data frame with the same number of columns and rows as the matrix.
 
 > ## Discussion 3
 >
