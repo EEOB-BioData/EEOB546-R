@@ -31,11 +31,14 @@ R's base data structures can be organized by their dimensionality (1d, 2d, or nd
 and whether they're homogeneous (all contents must be of the same type) or 
 heterogeneous (the contents can be of different types): 
 
-|    | Homogeneous   | Heterogeneous |
-|----|---------------|---------------|
-| 1d | Atomic vector | List          |
-| 2d | Matrix        | Data frame    |
-| nd | Array         |               |
+> ## R's base data structures
+>
+> |    | Homogeneous   | Heterogeneous |
+> |----|---------------|---------------|
+> | 1d | Atomic vector | List          |
+> | 2d | Matrix        | Data frame    |
+> | nd | Array         |               |
+{: .checklist}
 
 Almost all other objects are built upon these foundations. 
 Note that R has no 0-dimensional, or scalar types. Individual numbers or strings 
@@ -57,7 +60,7 @@ atomic vectors and lists. They have three common properties:
 They differ in the types of their elements: all elements of an atomic vector 
 must be the same type, whereas the elements of a list can have different types.
 
-### Atomic vectors
+## Atomic vectors
 
 There are four common types of atomic vectors : **logical**, **integer**, 
 **double** (often called numeric), and **character**.
@@ -80,7 +83,7 @@ Atomic vectors are always flat, even if you nest `c()`'s: Try `c(1, c(2, c(3, 4)
 Missing values are specified with `NA`, which is a logical vector of length 1. 
 `NA` will always be coerced to the correct type if used inside `c()`.
 
-#### Coercion
+### Coercion
 
 All elements of an atomic vector must be the same type, so when you attempt to 
 combine different types they will be __coerced__ to the most flexible type. The 
@@ -139,78 +142,73 @@ against this flow using the `as.` functions:
 > {: .solution}
 {: .challenge}
 
-When a logical vector is coerced to an integer or double, `TRUE` becomes 1 and `FALSE` becomes 0. 
-This is very useful in conjunction with `sum()` and `mean()`
+Coercion often happens automatically. Most mathematical functions (`+`, `log`, 
+`abs`, etc.) will coerce to a double or integer, and most logical operations 
+(`&`, `|`, `any`, etc) will coerce to a logical. You will usually get a warning
+message if the coercion might lose information. If confusion is likely, 
+explicitly coerce with `as.character()`, `as.double()`, `as.integer()`, or 
+`as.logical()`. 
+
+> ## TIP
+> When a logical vector is coerced to an integer or double, `TRUE` becomes 1 and 
+> `FALSE` becomes 0. This is very useful in conjunction with `sum()` and `mean()`, 
+> which will calculate the total number and proportion of "TRUE's", respectively.
+{: .callout}
+
+## Lists
+
+Lists are _one dimensional_ data structures that are different from atomic 
+vectors because their elements can be of any type, including lists. We construct 
+lists by using `list()` instead of `c()`:
 
 
 ~~~
-x <- c(FALSE, FALSE, TRUE)
-as.numeric(x)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] 0 0 1
-~~~
-{: .output}
-
-
-
-~~~
-# Total number of TRUEs
-sum(x)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] 1
-~~~
-{: .output}
-
-
-
-~~~
-# Proportion that are TRUE
-mean(x)
+x <- c(1,2,3)
+y <- list(1,2,3)
+z <- list(1:3, "a", c(TRUE, FALSE, TRUE), c(2.3, 5.9))
 ~~~
 {: .language-r}
 
+> ## RESULTS
+>
+> 
+> ~~~
+> str(x); str(y); str(z)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+>  num [1:3] 1 2 3
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> List of 3
+>  $ : num 1
+>  $ : num 2
+>  $ : num 3
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> List of 4
+>  $ : int [1:3] 1 2 3
+>  $ : chr "a"
+>  $ : logi [1:3] TRUE FALSE TRUE
+>  $ : num [1:2] 2.3 5.9
+> ~~~
+> {: .output}
+>
+{: .solution}
 
-
-~~~
-[1] 0.3333333
-~~~
-{: .output}
-
-Coercion often happens automatically. Most mathematical functions (`+`, `log`, `abs`, etc.) will coerce to a double or integer, and most logical operations (`&`, `|`, `any`, etc) will coerce to a logical. You will usually get a warning message if the coercion might lose information. If confusion is likely, explicitly coerce with `as.character()`, `as.double()`, `as.integer()`, or `as.logical()`. 
-
-### Lists
-
-Lists are different from atomic vectors because their elements can be of any type, including lists. You construct lists by using `list()` instead of `c()`:
-
-
-~~~
-x <- list(1:3, "a", c(TRUE, FALSE, TRUE), c(2.3, 5.9))
-str(x)
-~~~
-{: .language-r}
-
-
-
-~~~
-List of 4
- $ : int [1:3] 1 2 3
- $ : chr "a"
- $ : logi [1:3] TRUE FALSE TRUE
- $ : num [1:2] 2.3 5.9
-~~~
-{: .output}
-
-Lists are sometimes called __recursive__ vectors, because a list can contain other lists. This makes them fundamentally different from atomic vectors.
+Lists are sometimes called __recursive__ vectors, because a list can contain 
+other lists. This makes them fundamentally different from atomic vectors.
 
 
 ~~~
@@ -243,53 +241,56 @@ is.recursive(x)
 ~~~
 {: .output}
 
-`c()` will combine several lists into one. If given a combination of atomic vectors and lists, `c()` will coerce the vectors to lists before combining them. Compare the results of `list()` and `c()`:
+`c()` will combine several lists into one. If given a combination of atomic 
+vectors and lists, `c()` will coerce the vectors to lists before combining them. 
 
+> ## Example
+>
+> Compare the results of `list()` and `c()`:
+> 
+> ~~~
+> x <- list(list(1, 2), c(3, 4))
+> y <- c(list(1, 2), c(3, 4))
+> str(x); str(y)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> List of 2
+>  $ :List of 2
+>   ..$ : num 1
+>   ..$ : num 2
+>  $ : num [1:2] 3 4
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> List of 4
+>  $ : num 1
+>  $ : num 2
+>  $ : num 3
+>  $ : num 4
+> ~~~
+> {: .output}
+>
+{: .solution}
 
-~~~
-x <- list(list(1, 2), c(3, 4))
-y <- c(list(1, 2), c(3, 4))
-str(x)
-~~~
-{: .language-r}
-
-
-
-~~~
-List of 2
- $ :List of 2
-  ..$ : num 1
-  ..$ : num 2
- $ : num [1:2] 3 4
-~~~
-{: .output}
-
-
-
-~~~
-str(y)
-~~~
-{: .language-r}
-
-
-
-~~~
-List of 4
- $ : num 1
- $ : num 2
- $ : num 3
- $ : num 4
-~~~
-{: .output}
-
-The `typeof()` a list is `list`. You can test for a list with `is.list()` and coerce to a list with `as.list()`. You can turn a list into an atomic vector with `unlist()`. If the elements of a list have different types, `unlist()` uses the same coercion rules as `c()`.
+The `typeof()` a list is `list`. You can test for a list with `is.list()` and 
+coerce to a list with `as.list()`. You can turn a list into an atomic vector 
+with `unlist()`. If the elements of a list have different types, `unlist()` uses 
+the same coercion rules as `c()`.
 
 > ## Discussion 1
 >
->
-> 1. What are the common types of atomic vector? How does a list differ from an atomic vector?
+> 1. What are the common types of atomic vector? How does a list differ from an 
+> atomic vector?
 > 
-> 1. What makes `is.vector()` and `is.numeric()` fundamentally different to `is.list()` and `is.character()`?
+> 1. What will the commands `is.vector(list(1,2,3))` `is.numeric(c(1L,2L,3L))` 
+> produce? How about `typeof(as.numeric(c(1L,2L,3L)))`?
 > 
 > 1. Test your knowledge of vector coercion rules by predicting the output of the following uses of `c()`:
 > 
@@ -330,18 +331,24 @@ The three most important attributes:
 
 * Class, used to implement the S3 object system.
  
-Each of these attributes has a specific accessor function to get and set values. 
-When working with these attributes, use `names(x)`, `dim(x)`, and `class(x)`, 
-not `attr(x, "names")`, `attr(x, "dim")`, and `attr(x, "class")`.
+Each of these attributes has a specific accessor function to get and set values: 
+`names(x)`, `dim(x)`, and `class(x)`. To see
 
 #### Names {#vector-names}
 
 You can name elements in a vector in three ways:
 
-* When creating it: 
+* When creating it: `x <- c(a = 1, b = 2, c = 3)`
+* By modifying an existing vector in place: `x <- 1:3; names(x) <- c("a", "b", "c")`
+* By creating a modified copy of a vector: `x <- 1:3; x <- setNames(x, c("a", "b", "c"))`
+
+You can see these names by just typing the vector's name. You can access them 
+by using the `names(x)` function.
+
 
 ~~~
-x <- c(a = 1, b = 2, c = 3)
+x <- 1:3; 
+x <- setNames(x, c("a", "b", "c"))
 x
 ~~~
 {: .language-r}
@@ -368,58 +375,14 @@ names(x)
 ~~~
 {: .output}
 
-* By modifying an existing vector in place: 
-
-~~~
-x <- 1:3; names(x) <- c("a", "b", "c")
-~~~
-{: .language-r}
-
-* By creating a modified copy of a vector: 
-
-~~~
-x <- 1:3
-x <- setNames(x, c("a", "b", "c"))
-~~~
-{: .language-r}
-
 Names don't have to be unique and not all elements of a vector need to have a name. 
 If some names are missing, `names()` will return an empty string for those elements. 
 If all names are missing, `names()` will return `NULL`.
 
-
-~~~
-y <- c(a = 1, 2, 3)
-names(y)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "a" ""  "" 
-~~~
-{: .output}
-
-
-
-~~~
-z <- c(1, 2, 3)
-names(z)
-~~~
-{: .language-r}
-
-
-
-~~~
-NULL
-~~~
-{: .output}
-
 You can create a new vector without names using `unname(x)`, or remove names in 
 place with `names(x) <- NULL`.
 
-#### Factors
+### Factors
 
 One important use of attributes is to define factors. A factor is a vector that 
 can contain only predefined values, and is used to store categorical data. 
@@ -427,170 +390,117 @@ Factors are built on top of integer vectors using two attributes: the `class()`,
 "factor", which makes them behave differently from regular integer vectors, and 
 the `levels()`, which defines the set of allowed values.
 
+> ## Examples
+>
+> 
+> ~~~
+> x <- c("a", "b", "b", "a")
+> x
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] "a" "b" "b" "a"
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> x <- factor(x)
+> x
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] a b b a
+> Levels: a b
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> class(x)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] "factor"
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> levels(x)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] "a" "b"
+> ~~~
+> {: .output}
+> 
+> Factors are useful when you know the possible values a variable may take. Using 
+> a factor instead of a character vector makes it obvious when some groups contain 
+> no observations:
+> 
+> 
+> ~~~
+> sex_char <- c("m", "m", "m")
+> sex_factor <- factor(sex_char, levels = c("m", "f"))
+> 
+> table(sex_char)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> sex_char
+> m 
+> 3 
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> table(sex_factor)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> sex_factor
+> m f 
+> 3 0 
+> ~~~
+> {: .output}
+> 
+{: .solution}
 
-~~~
-x <- c("a", "b", "b", "a")
-x
-~~~
-{: .language-r}
+Factors crip up all over R, and occasionally cause headaches for new R users.
 
-
-
-~~~
-[1] "a" "b" "b" "a"
-~~~
-{: .output}
-
-
-
-~~~
-x <- factor(x)
-x
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] a b b a
-Levels: a b
-~~~
-{: .output}
-
-
-
-~~~
-class(x)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "factor"
-~~~
-{: .output}
-
-
-
-~~~
-levels(x)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "a" "b"
-~~~
-{: .output}
-
-
-
-~~~
-# You can't use values that are not in the levels
-x[2] <- "c"
-~~~
-{: .language-r}
-
-
-
-~~~
-Warning in `[<-.factor`(`*tmp*`, 2, value = "c"): invalid factor level, NA
-generated
-~~~
-{: .warning}
-
-
-
-~~~
-x
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] a    <NA> b    a   
-Levels: a b
-~~~
-{: .output}
-
-
-
-~~~
-# NB: combining factors will produce unwanted results!
-c(x, factor("b"))
-~~~
-{: .language-r}
-
-
-
-~~~
-[1]  1 NA  2  1  1
-~~~
-{: .output}
-
-
-
-~~~
-class(c(x, factor("b")))
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "integer"
-~~~
-{: .output}
-
-Factors are useful when you know the possible values a variable may take. Using 
-a factor instead of a character vector makes it obvious when some groups contain 
-no observations:
-
-
-~~~
-sex_char <- c("m", "m", "m")
-sex_factor <- factor(sex_char, levels = c("m", "f"))
-
-table(sex_char)
-~~~
-{: .language-r}
-
-
-
-~~~
-sex_char
-m 
-3 
-~~~
-{: .output}
-
-
-
-~~~
-table(sex_factor)
-~~~
-{: .language-r}
-
-
-
-~~~
-sex_factor
-m f 
-3 0 
-~~~
-{: .output}
-
-Factors crip up all over R, and occasionally cause headaches for new R users (R 4.0!).
-
-#### Matrices and arrays {#matrices-and-arrays}
+## Matrices and arrays {#matrices-and-arrays}
 
 Adding a `dim()` attribute to an atomic vector allows it to behave like a 
-multi-dimensional __array__. A special case of the array is the __matrix__, which has two dimensions. Matrices are used commonly as part of the mathematical machinery of statistics. Arrays are much rarer, but worth being aware of.
+multi-dimensional **array**. An array with two dimensions is called **matrix**. 
+Matrices are used commonly as part of the mathematical 
+machinery of statistics. Arrays are much rarer, but worth being aware of.
 
-Matrices and arrays are created with `matrix()` and `array()`, or by using the assignment form of `dim()`:
+Matrices and arrays are created with `matrix()` and `array()`, 
+or by using the assignment form of `dim()`.
 
 
 ~~~
@@ -598,7 +508,6 @@ Matrices and arrays are created with `matrix()` and `array()`, or by using the a
 a <- matrix(1:6, ncol = 3, nrow = 2)
 # One vector argument to describe all dimensions
 b <- array(1:12, c(2, 3, 2))
-
 # You can also modify an object in place by setting dim()
 c <- 1:12
 dim(c) <- c(3, 4)
@@ -660,7 +569,9 @@ c
 ~~~
 {: .output}
 
-You can test if an object is a matrix or array using `is.matrix()` and `is.array()`, or by looking at the length of the `dim()`. `as.matrix()` and `as.array()` make it easy to turn an existing vector into a matrix or array.
+You can test if an object is a matrix or array using `is.matrix()` and `is.array()`,
+or by looking at the length of the `dim()`. `as.matrix()` and `as.array()` make 
+it easy to turn an existing vector into a matrix or array.
 
 > ## Discussion 2
 >
@@ -698,7 +609,7 @@ matrix and the list.
 > * `str()` - structure of data frame - name, type and preview of data in each column
 > * `names()` - shows the `names` attribute for a data frame, which gives the column names.
 > * `sapply(dataframe, class)` - shows the class of each column in the data frame
-{: .callout}
+{: .checklist}
 
 ### Creation
 
@@ -720,7 +631,8 @@ str(df)
 ~~~
 {: .output}
 
-Beware `data.frame()`'s default behaviour which turns strings into factors. Use `stringAsFactors = FALSE` to suppress this behaviour!
+In R prior to v.4, `data.frame()`'s default behavior was to turn strings into 
+factors. Use `stringAsFactors = FALSE` to suppress this behavior!
 
 
 ~~~
@@ -743,76 +655,81 @@ str(df)
 
 ### Testing and coercion
 
-Because a `data.frame` is an S3 class, its type reflects the underlying vector used to build it: the list. To check if an object is a data frame, use `class()` or test explicitly with `is.data.frame()`:
+Because a `data.frame` is an S3 class, its type reflects the underlying vector 
+used to build it: the list. To check if an object is a data frame, use `class()` 
+or test explicitly with `is.data.frame()`:
 
-
-~~~
-is.vector(df)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] FALSE
-~~~
-{: .output}
-
-
-
-~~~
-is.list(df)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-
-
-
-~~~
-is.data.frame(df)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] TRUE
-~~~
-{: .output}
-
-
-
-~~~
-typeof(df)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "list"
-~~~
-{: .output}
-
-
-
-~~~
-class(df)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "data.frame"
-~~~
-{: .output}
+> ## Examples
+>
+> 
+> ~~~
+> is.vector(df)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] FALSE
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> is.list(df)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] TRUE
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> is.data.frame(df)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] TRUE
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> typeof(df)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] "list"
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> class(df)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1] "data.frame"
+> ~~~
+> {: .output}
+{: .solution}
 
 You can coerce an object to a data frame with `as.data.frame()`:
 
