@@ -51,6 +51,61 @@ environment. It provides a built in editor, works on all platforms (including
 on servers) and supports many features useful for working in R: syntax highlighting, quick access 
 to R's help system, plots visible alongside code, and integration with version control.
 
+### How to use R?
+Much of your time in R will be spent in the R interactive
+console. This is where you will run all of your code, and can be a
+useful environment to try out ideas before adding them to an R script
+file. This console in RStudio is the same as the one you would get if
+you typed in `R` in your command-line environment.
+
+The first thing you will see in the R interactive session is a bunch
+of information, followed by a ">" and a blinking cursor. In many ways
+this is similar to the shell environment you learned about during the
+unix lessons: it operates on the same idea of a "Read, evaluate,
+print loop": you type in commands, R tries to execute them, and then
+returns a result.
+
+## Work flow within RStudio
+There are three main ways one can work within RStudio.
+
+1. Test and play within the interactive R console then copy code into
+a .R file to run later.
+   *  This works well when doing small tests and initially starting off.
+   *  You can use the history panel to copy all the commands to the source file.
+2. Start writing in an .R file and use RStudio's command / short cut
+to push current line, selected lines or modified lines to the
+interactive R console.
+   * This works well if you are more advanced in writing R code; 
+   * All your code is saved for later
+   * You will be able to run the file you create from within RStudio
+     or using R's `source()`  function.
+3. Better yet, you can write your code in R markdown file. 
+An [R Markdown file](http://rmarkdown.rstudio.com/) allows you to incorporate your
+code in a narration that a reader needs to understand it, run it, and display your 
+results. You can use multiple languages including R, Python, and SQL.  
+
+> ## Tip: Creating an R Markdown document
+>
+> You can create a new R Markdown document in RStudio with the menu command 
+> File -> New File -> RMarkdown_. A new windows opens and asks you to enter 
+> title, author, and default output format for your R Markdown document. After 
+> you enter this information, a new R Markdown file opens in a new tab.  
+> Notice that the file contains three types of content: 
+> * An (optional) YAML header surrounded by ---s; 
+> * R code chunks surrounded by ```s; 
+> * text mixed with simple text formatting.  
+>
+> You can use the “Knit” button in the RStudio IDE to render the 
+> file and preview the output with a single click or keyboard shortcut (Shift + Cmd + K).
+> Note that you can quickly insert chunks of code into your file with the keyboard 
+> shortcut Ctrl + Alt + I (OS X: Cmd + Option + I) or the Add Chunk command in the 
+> editor toolbar. You can run the code in a chunk by pressing the green triangle on 
+> the right. To run the current line, you can:  
+> 1. click on the `Run` button above the editor panel, or  
+> 2. select "Run Lines" from the "Code" menu, or  
+> 3. hit Ctrl-Enter in Windows or Linux or Command-Enter on OS X.   
+{: .solution}
+
 **Basic layout**
 
 When you first open RStudio, you will be greeted by three panels:
@@ -218,4 +273,3 @@ Now we want to push the contents of this commit to GitHub, so it is also backed-
 > 5. Commit and push it from the Git tab on the Environment/history panel of Rstudio.
 {: .challenge}
 
-We will lern more about RStudio in the next lesson.

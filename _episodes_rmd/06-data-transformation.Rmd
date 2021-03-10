@@ -30,21 +30,25 @@ knitr_fig_path("06-")
 ```
 
 # Data transformation {#transform}
-<img src="../images/dplyr.png" align="right" hspace="20">
+<img src="../img/dplyr.png" align="right" hspace="20">
 
 ## Introduction
 
-Every data analysis you conduct will likely involve manipulating dataframes at some point. Quickly extracting, 
-transforming, and summarizing information from dataframes is an essential R skill. In this part we'll use Hadley 
-Wickham’s `dplyr` package, which consolidates and simplifies many of the common operations we perform on dataframes. 
-In addition, much of `dplyr` key functionality is written in C++ for speed.
+Every data analysis you conduct will likely involve manipulating dataframes at 
+some point. Quickly extracting, transforming, and summarizing information from 
+dataframes is an essential R skill. In this part we'll use Hadley Wickham’s 
+`dplyr` package, which consolidates and simplifies many of the common operations 
+we perform on dataframes. In addition, much of `dplyr` key functionality is 
+written in C++ for speed.
 
-```{r setup, message = TRUE}
+## Preliminaries
+#### Inatall (if needed) and/or load two libraries, `tidyverse` and `tidyr`:
+
+```{r setup, include=FALSE}
 if (!require("tidyverse")) install.packages("tidyverse")
 library(tidyverse)
 library(tidyr)
 ```
-
 
 > ## Dataset
 >
@@ -55,43 +59,37 @@ library(tidyr)
 > divergence as estimated by percent identity between human and chimpanzee genomes (column Divergence). 
 > Other columns contain information about the sequencing depth (depth), and GC content 
 > (percent.GC) for 1kb windows in human chromosome 20. We’ll only work with a few columns in our examples; 
-> see the description of Dataset_S1.txt in the original paper for more detail.
+> see the description of Dataset_S1.txt in the original paper for more details.
 >
-> ### Downloading the dataset
->
-> * You can download the Dataset_S1.txt file into a local folder of your choice using the `download.file` function.
-> The `read_csv` function can then be executed to read the downloaded file:
-> ```{r eval=FALSE, echo=TRUE}
-> download.file("https://raw.githubusercontent.com/vsbuffalo/bds-files/master/chapter-08-r/Dataset_S1.txt", destfile = "data/Dataset_S1.txt")
-> dvst <- read_csv("data/Dataset_S1.txt")
-> ```
->
-> * Alternatively, you can read files directly from the Internet with the `read_csv` function:
-> ```{r eval=FALSE, echo=TRUE}
-> dvst <- read_csv("https://raw.githubusercontent.com/vsbuffalo/bds-files/master/chapter-08-r/Dataset_S1.txt")
-> ```
 {: .callout}
 
-So, let's read the file directly into a `tbl_df` or `tibble`:
+#### Download the dataset
 
-```{r eval=TRUE, include=FALSE}
+We can download the Dataset_S1.txt file into a local folder of your choice using 
+the `download.file` function. Instead, we will read file directly from the 
+Internet with the `read_csv` function:
+
+```{r eval=TRUE}
 dvst <- read_csv("https://raw.githubusercontent.com/vsbuffalo/bds-files/master/chapter-08-r/Dataset_S1.txt")
 ```
 
 Notice the parsing of columns in the file. Also notice that some of the columns names 
 contain spaces and special characters. We'll replace them soon to facilitate typing.
-Type `dvst` to look at the dataframe:
 
-```{r eval=TRUE, include=FALSE}
+We can check the data structure creates with either the `str(dvst)` command or by
+typing `dvst`:
+
+```{r eval=TRUE}
 dvst
 ```
 
-Because it’s common to work with dataframes with more rows and columns than fit in your screen, `tibble` 
-wraps dataframes so that they don’t fill your screen when you print them 
-(similar to using `head()`). Notice that the tibble only shows the first few rows and all the columns that 
-fit on one screen. Run `View(dvst)`, which will open the dataset in the RStudio viewer, to see the whole dataframe. 
-Also notice the row of three (or four) letter abbreviations under the column names. 
-These describe the type of each variable:
+**It's a tibble!**. Notice that the tibble only shows the first few rows and all 
+the columns that fit on one screen. 
+
+Run `View(dvst)`, which will open the dataset in the RStudio viewer, to see the 
+whole dataframe. 
+
+Also notice that there are some additional variable types available:
 
 | Abbreviation | Variable type            |
 |:------------|:----------------------------|
@@ -104,35 +102,38 @@ These describe the type of each variable:
 | `lgl`       | logical                     |
 | `date`      | dates                       |
 
-Although the standard R operations work with tibbles (see below), we'll learn how to use dplyr functions instead
-
-```{r}
-colnames(dvst)[12] <- "percent.GC" #rename X.GC columns
-dvst$GC.binned <- cut(dvst$percent.GC, 5) # create a new column from existing data
-```
-
 ---
 
 ## `dplyr` basics
 
-There are **five key dplyr functions** that allow you to solve the vast majority of data manipulation challenges:
+There are **five key dplyr functions** that allow you to solve the vast majority 
+of data manipulation challenges:
 
-| Function     | Action                                               |
-|:-------------|:-----------------------------------------------------|
-| `filter()`   | Pick observations by their values                    |
-| `arrange()`  | Reorder the rows                                     |
-| `select()`   | Pick variables by their names                        |
-| `mutate()`   | Create new variables with functions of existing variables |
-| `summarise()`| Collapse many values down to a single summary        |
+> ## Key `dplyr` functions
+> 
+> | Function     | Action                                               |
+> |:-------------|:-----------------------------------------------------|
+> | `filter()`   | Pick observations by their values                    |
+> | `arrange()`  | Reorder the rows                                     |
+> | `select()`   | Pick variables by their names                        |
+> | `mutate()`   | Create new variables with functions of existing variables |
+> | `summarise()`| Collapse many values down to a single summary        |
+> 
+{: .checklist}
 
 None of these functions perform tasks you can’t accomplish with R’s base functions. 
-But dplyr’s advantage is in the added consistency, speed, and versatility of its data manipulation interface. 
+But dplyr’s advantage is in the added consistency, speed, and versatility of its 
+data manipulation interface. 
 
-dplyr functions can be used in conjunction with `group_by()`, which changes the scope of each function from operating 
-on the entire dataset to operating on it group-by-group. These six functions provide the verbs for a language of 
-data manipulation.
+### `group_by` function
 
-All verbs work similarly: 
+`dplyr` functions can be used in conjunction with `group_by()`, which changes 
+the scope of each function from operating on the entire dataset to operating on 
+it group-by-group. 
+
+### Overall command structure
+
+All dplyr functions work similarly: 
 
 1.  The first argument is a data frame (actually, a `tibble`).
 
@@ -141,155 +142,134 @@ All verbs work similarly:
     
 1.  The result is a new data frame.
 
-Together these properties make it easy to chain together multiple simple steps to achieve a complex result. 
-Let's dive in and see how these verbs work.
+Together these properties make it easy to chain together multiple simple steps 
+to achieve a complex result.
 
-===
+These six functions provide the verbs for a language of 
+data manipulation. Let's dive in and see how these verbs work.
+
+---
 
 ## Use `filter()` to filter rows
 
-Let's say we used `summary` to get an idea about the total number of SNPs in different windows:
+Let's say we used `summary` to get an idea about the total number of SNPs in 
+different windows:
 
 ```{r}
-summary(dvst$`total SNPs`)
-# or with dplyr
-summary(select(dvst,`total SNPs`)) #this does not look simpler, but wait...
+summary(select(dvst,`total SNPs`)) # Here we also used `select` function. We'll talk about it soon.
 ```
 
-We see that this number varies considerably across all windows on chromosome 20 and the data are right-skewed: 
-the third quartile is 12 SNPs, but the maximum is 93 SNPs. Often we want to investigate such outliers more 
-closely. We can use `filter()` to extract the rows of our dataframe based on their values. The first argument 
-is the name of the data frame. The second and subsequent arguments are the expressions that filter the data frame.
+The number varies considerably across all windows on chromosome 20 
+and the data are right-skewed: the third quartile is 12 SNPs, but the maximum is 
+93 SNPs. Often we want to investigate such outliers more closely. 
+
+We can use `filter()` to extract the rows of our dataframe based on their values. 
+The first argument is the name of the data frame. The second and subsequent 
+arguments are the expressions that filter the data frame.
 
 ```{r}
 filter(dvst,`total SNPs` >= 85)
 ```
 
-We can build more elaborate queries by using multiple filters. For example, suppose we wanted to see all windows 
-where Pi (nucleotide diversity) is greater than 16 and percent GC is greater than 80. We’d use:
-
-```{r}
-filter(dvst, Pi > 16, percent.GC > 80)
-```
-
-When you run that line of code, dplyr executes the filtering operation and returns a new data frame. 
-Note, **dplyr functions never modify their inputs**, so if you want to save the result, you'll need to use the 
-assignment operator, `<-`:
-
-```{r}
-new_df <- filter(dvst, Pi > 16, percent.GC > 80)
-```
-
-> ## Miscellaneous Tips
->
-> R either prints out the results, or saves them to a variable. If you want to do both, you can wrap the 
-assignment in parentheses:
+> ## Questions:
 > 
-> ```{r}
-> (new_df <- filter(dvst, Pi > 16, percent.GC > 80))
+> - How many windows have >= 85 SNPs?  
+> - What is a SNP?
+{: .discussion}
+
+We can build more elaborate queries by using multiple filters:
+
+```{r}
+filter(dvst, Pi > 16, `%GC` > 80)
+```
+
+Note, **dplyr functions never modify their inputs**, so if you want to save the 
+result, you'll need to use the assignment operator, `<-`:
+
+```{r}
+new_df <- filter(dvst, Pi > 16, `%GC` > 80)
+```
+
+> ## Tip
+>
+> R either prints out the results, or saves them to a variable. If you want to 
+do both, you can wrap the assignment in parentheses:
+> 
+> ```{r, eval=FALSE}
+> (new_df <- filter(dvst, Pi > 16, `%GC` > 80))
 > ```
 {: .callout}
 
 ### Comparisons
 
-To use filtering effectively, you have to know how to select the observations that you want using the 
-comparison operators. R provides the standard suite: `>`, `>=`, `<`, `<=`, `!=` (not equal), and `==` (equal). 
-Note, that because `==` does not work well with real numbers, use dplyr `near` function instead!
-
-<!-- > ## Common pitfalls -->
-<!-- > -->
-<!-- > When you're starting out with R, the easiest mistake to make is to use `=` instead of `==` when testing for equality. When this > happens you'll get an informative error: -->
-<!-- >  -->
-<!-- > ```{r, error = TRUE} -->
-<!-- > filter(dvst, `total SNPs` = 0) -->
-<!-- > ``` -->
-<!-- > -->
-<!-- > There's another common problem you might encounter when using `==`: floating point numbers.  -->
-<!-- > These results might surprise you! -->
-<!-- >  -->
-<!-- > ```{r} -->
-<!-- > sqrt(2) ^ 2 == 2 -->
-<!-- > 1/49 * 49 == 1 -->
-<!-- > ``` -->
-<!-- >  -->
-<!-- > Computers use finite precision arithmetic (they obviously can't store an infinite number of digits!)  -->
-<!-- > so remember that every number you see is an approximation. Instead of relying on `==`, use `near()` from the dplyr package: -->
-<!-- >  -->
-<!-- > ```{r} -->
-<!-- > near(sqrt(2) ^ 2,  2) -->
-<!-- > near(1 / 49 * 49, 1) -->
-<!-- > ``` -->
-<!-- > -->
-<!-- {: .callout} -->
+Use comparison operators to filter effectively: 
+`>`, `>=`, `<`, `<=`, `!=` (not equal), and `==` (equal). 
+Remember, that `==` does not work well with real numbers! Use the dplyr `near` 
+function instead!
 
 ### Logical operators
 
-Multiple arguments to `filter()` are combined with "and": every expression must be true in order for a 
-row to be included in the output. For other types of combinations, you'll need to use Boolean operators 
-yourself: `&` is "and", `|` is "or", and `!` is "not". The figure below shows the complete set 
-of Boolean operations.
+Multiple arguments to `filter()` are combined with "and": every expression must 
+be true in order for a row to be included in the output. For other types of 
+combinations, you'll need to use Boolean operators 
+yourself: `&` is "and", `|` is "or", and `!` is "not". The figure below shows 
+the complete set of Boolean operations.
 
 ```{r bool-ops, echo = FALSE, fig.cap = "Complete set of boolean operations. `x` is the left-hand circle, `y` is the right-hand circle, and the shaded region show which parts each operator selects."}
-knitr::include_graphics("../images/transform-logical.png")
+knitr::include_graphics("../img/transform-logical.png")
 ```
 
-If you are looking for multiple values within a certain column, use the `x %in% y` shortcut. This will 
-select every row where `x` is one of the values in `y`:
+### `x %in% y` operator
 
-```{r, eval = FALSE}
-filter(dvst, total.SNPs %in% c(0,1,2))
+If you are looking for multiple values within a certain column, use the `x %in% y` 
+operator. This will select every row where `x` is one of the values in `y`:
+
+```{r}
+filter(dvst, `total SNPs` %in% c(0,1,2))
 ```
 
-Finally, whenever you start using complicated, multipart expressions in `filter()`, consider making them explicit 
-variables instead. That makes it much easier to check your work. We'll learn how to create new variables shortly.
+Finally, whenever you start using complicated, multipart expressions in `filter()`, 
+consider making them explicit variables instead. That makes it much easier to 
+check your work. We'll learn how to create new variables shortly.
 
->  ## Missing values
+> ## Missing values
 >  
->  One important feature of R that can make comparison tricky are missing values, or `NA`s ("not availables"). 
->  `NA` represents an unknown value so missing values are "contagious": almost any operation involving an unknown 
->  value will also be unknown.
+> One important feature of R that can make comparison tricky are missing values, or `NA`s ("not availables"). 
+> `NA` represents an unknown value so missing values are "contagious": almost any operation involving an unknown 
+> value will also be unknown.
 >  
->  ```{r}
->  NA > 5
->  10 == NA
->  NA + 10
->  NA / 2
->  NA == NA
->  ```
+> > ## Examples:
+> > 
+> >  ```{r}
+> >  NA > 5
+> >  10 == NA
+> >  NA + 10
+> >  NA / 2
+> >  NA == NA
+> >  ```
+> {: .solution}
 {: .callout}
 
-`filter()` only includes rows where the condition is `TRUE`; it excludes both `FALSE` and `NA` values. If you want 
+`filter()` only includes rows where the condition is `TRUE`; it excludes both 
+`FALSE` and `NA` values. If you want 
 to preserve missing values, ask for them explicitly:
 
 ```{r, eval = FALSE}
 filter(dvst, is.na(Divergence))
 ```
 
-> ## Your turn!
->
-> 1.  Find all windows ...
-> - with the lowest/highest GC content
-> - that have 0 total SNPs
-> - that are incomplete (<1000 bp)
-> - that have the highest divergence with the chimp
-> - that have less than 5% GC difference from the mean
->
-> 2.  One useful dplyr filtering helper is `between()`. 
-> - Can you figure out what does it do?
-> - Use it to simplify the code needed to answer the previous challenges.
->
-{: .discussion}
-
-===
+---
 
 ## Use `mutate() to add new variables`
 
-It's often useful to add new columns that are functions of existing columns (notice, how we used `dvst$GC.binned <- cut(dvst$percent.GC, 5)` above). That's the job of `mutate()`. 
+It's often useful to add new columns that are functions of existing columns. 
+That's the job of `mutate()`. `mutate()` always adds new columns at the end of 
+your dataset. Remember that when you're in RStudio, the easiest way to see all 
+the columns is with `View()`.
 
-`mutate()` always adds new columns at the end of your dataset. Remember that when you're in RStudio, the easiest 
-way to see all the columns is with `View()`.
-
-Here we'll add an additional column that indicates whether a window is in the centromere region (nucleotides 25,800,000 to 29,700,000, based on Giemsa banding; see [README](https://github.com/vsbuffalo/bds-files/blob/master/chapter-08-r/README.md) for details). 
+Here we'll add an additional column that indicates whether a window is in the 
+centromere region (nucleotides 25,800,000 to 29,700,000, based on Giemsa banding; 
+see [README](https://github.com/vsbuffalo/bds-files/blob/master/chapter-08-r/README.md) for details). 
 
 We'll call it `cent` and make it logical (with TRUE/FALSE values):
 
@@ -298,40 +278,16 @@ mutate(dvst, cent = start >= 25800000 & end <= 29700000)
 dvst
 ```
 
-> ## Challenge 1
+> ## Question:
 >
-> * Why don't we see the column in the dataset? 
+> Why don't we see the column in the dataset? 
 >
-> > ## Solution
-> > As discussed above, dplyr functions never modify their inputs
-> {: .solution}
->
-> * What standard R command can we use to create a new column in an existing dataframe?
-> > ## Solution
-> > ```{r}
-> > d_df$cent <- d_df$start >= 25800000 & d_df$end <= 29700000
-> > ```
-> {: .solution}
->
-> * How many windows fall into this centromeric region? 
->
-> > ## Solution
-> >
-> > Use `filter()` 
-> > ```{r}
-> > filter(d_df,cent==TRUE)
-> > ```
-> > or sum()
-> > 
-> > ```{r}
-> > sum(d_df$cent)
-> > ```
-> {: .solution}
-{: .challenge}
+{: .discussion}
 
-In the dataset we are using, the diversity estimate Pi is measured per sampling window (1kb) and scaled 
-up by 10x (see supplementary Text S1 for more details). It would be useful to have this scaled as per 
-basepair nucleotide diversity (so as to make the scale more intuitive).
+In the dataset we are using, the diversity estimate Pi is measured per sampling 
+window (1kb) and scaled up by 10x (see supplementary Text S1 for more details). 
+It would be useful to have this scaled as per basepair nucleotide diversity 
+(so as to make the scale more intuitive).
 
 ```{r}
 mutate(dvst, diversity = Pi / (10*1000)) # rescale, removing 10x and making per bp
@@ -355,7 +311,7 @@ transmute(dvst,
 )
 ```
 
-> ## Useful creation functions
+> ## Other creation functions
 > 
 > There are many functions for creating new variables that you can use with `mutate()`. The key property is that 
 > the function must be vectorised: it must take a vector of values as input, return a vector with the same number 
@@ -394,44 +350,52 @@ transmute(dvst,
 >     `row_number()`, `dense_rank()`, `percent_rank()`, `cume_dist()`,
 >     `ntile()`.  See their help pages for more details.
 > 
-{: .callout}
+{: .solution}
 
-===
+> ## Your turn!
+>
+> 1.  Find all sampling windows ...
+> - with the lowest/highest GC content
+> - that have 0 total SNPs
+> - that are incomplete (<1000 bp)
+> - that have the highest divergence with the chimp
+> - that have less than 5% GC difference from the mean
+>
+> 2.  One useful dplyr filtering helper is `between()`. 
+> - Can you figure out what does it do?
+> - Use it to simplify the code needed to answer the previous challenges.
+> 
+> 3. How many windows fall into the centromeric region? 
+>
+{: .challenge}
+
+
+---
 
 ## Use `arrange()` to arrange rows
 
-`arrange()` works similarly to `filter()` except that instead of selecting rows, it changes their order. 
-It takes a data frame and a set of column names (or more complicated expressions) to order by. If you 
-provide more than one column name, each additional column will be used to break ties in the values of 
-preceding columns:
+`arrange()` works similarly to `filter()` except that instead of selecting rows, 
+it changes their order. It takes a data frame and a set of column names (or more 
+complicated expressions) to order by. If you provide more than one column name, 
+each additional column will be used to break ties in the values of preceding 
+columns:
 
 ```{r}
-arrange(dvst, cent, percent.GC)
+arrange(dvst, cent, `%GC`)
 ```
 
 Use `desc()` to re-order by a column in descending order:
 
 ```{r}
-arrange(dvst, desc(cent), percent.GC)
+arrange(dvst, desc(cent), `%GC`)
 ```
 
 Note, that missing values are always sorted at the end!
 
-### Exercises
-
-1.  How could you use `arrange()` to sort all missing values to the start?
-    (Hint: use `is.na()`).
-
-===    
-
 ## Use `select()` to select columns and `rename()` to rename them
 
-It's not uncommon to get datasets with hundreds or even thousands of variables. In this case, the first 
-challenge is often narrowing in on the variables you're actually interested in. `select()` allows you to 
-rapidly zoom in on a useful subset using operations based on the names of the variables.
-
-`select()` is not terribly useful with our data because they only have a few variables, but you can still 
-get the general idea:
+`select()` is not terribly useful with our data because they only have a few 
+variables, but you can still get the general idea:
 
 ```{r}
 # Select columns by name
@@ -439,55 +403,47 @@ select(dvst, start, end, Divergence)
 # Select all columns between depth and Pi (inclusive)
 select(dvst, depth:Pi)
 # Select all columns except those from start to percent.GC (inclusive)
-select(dvst, -(start:percent.GC))
+select(dvst, -(start:`%GC`))
 ```
 
-There are a number of helper functions you can use within `select()`:
-
-* `starts_with("abc")`: matches names that begin with "abc".
-
-* `ends_with("xyz")`: matches names that end with "xyz".
-
-* `contains("ijk")`: matches names that contain "ijk".
-
-* `matches("(.)\\1")`: selects variables that match a regular expression.
-   This one matches any variables that contain repeated characters. You'll 
-   learn more about regular expressions in [strings].
-   
-*  `num_range("x", 1:3)` matches `x1`, `x2` and `x3`.
-   
-See `?select` for more details.
-
-`select()` can also be used to rename variables, but it's rarely useful because it drops all of the variables 
-not explicitly mentioned. Instead, use `rename()`, which is a variant of `select()` that keeps all the 
-variables that aren't explicitly mentioned:
+`select()` can also be used to rename variables, but it's rarely useful because 
+it drops all of the variables not explicitly mentioned. Instead, use `rename()`, 
+which is a variant of `select()` that keeps all the variables that aren't 
+explicitly mentioned:
 
 ```{r}
 dvst <- rename(dvst, total.SNPs = `total SNPs`,
        total.Bases = `total Bases`,
        unique.SNPs = `unique SNPs`,
-       reference.Bases = `reference Bases`) #renaming all the columns with spaces!
+       reference.Bases = `reference Bases`,
+       percent.GC = `%GC`) #renaming all the columns that require ` `!
 colnames(dvst)
 ```
 
-Another option is to use `select()` in conjunction with the `everything()` helper. This is useful if you 
-have a handful of variables you'd like to move to the start of the data frame.
+Another option is to use `select()` in conjunction with the `everything()` helper. 
+This is useful if you have a handful of variables you'd like to move to the start 
+of the data frame:
 
 ```{r}
 select(dvst, cent, everything())
 ```
 
-===
+---
 
 ## Use `summarise()` to make summaries
 
 The last key verb is `summarise()`. It collapses a data frame to a single row:
 
 ```{r}
-summarise(dvst, GC = mean(percent.GC, na.rm = TRUE), averageSNPs=mean(total.SNPs, na.rm = TRUE), allSNPs=sum(total.SNPs))
+summarise(dvst, GC = mean(percent.GC, na.rm = TRUE), averageSNPs=mean(total.SNPs, 
+na.rm = TRUE), allSNPs=sum(total.SNPs))
 ```
 
-`summarise()` is not terribly useful unless we pair it with `group_by()`. This changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they'll be automatically applied "by group". For example, if we applied exactly the same code to a data frame grouped by position related to centromere:
+`summarise()` is not terribly useful unless we pair it with `group_by()`. 
+This changes the unit of analysis from the complete dataset to individual groups. 
+Then, when you use the dplyr verbs on a grouped data frame they'll be 
+automatically applied "by group". For example, if we applied exactly the same 
+code to a data frame grouped by position related to centromere:
 
 ```{r}
 by_cent <- group_by(dvst, cent)
@@ -513,12 +469,12 @@ summarize(by_GC, mean_depth=mean(depth), n_rows=n())
 ```
 
 
-> ## Challenge 6
+> ## Your turn
 >
 > As another example, consider looking at Pi by windows that fall in the centromere and those that do not.
 > Does the centromer have higher nucleotide diversity than other regions in these data?
 >
-> > ## Solutions to challenge 6
+> > ## Solutions
 > >
 > > Because cent is a logical vector, we can group by it directly:
 > > 
@@ -557,13 +513,17 @@ summarize(by_GC, mean_depth=mean(depth), n_rows=n())
 >     This makes `sum()` and `mean()` very useful: `sum(x)` gives the number of 
 >    `TRUE`s in `x`, and `mean(x)` gives the proportion.
 >
-{: callout}
+{: .callout}
 
-Together `group_by()` and `summarise()` provide one of the tools that you'll use most commonly when working with dplyr: grouped summaries. But before we go any further with this, we need to introduce a powerful new idea: the pipe.
+Together `group_by()` and `summarise()` provide one of the tools that you'll use 
+most commonly when working with dplyr: grouped summaries. But before we go any 
+further with this, we need to introduce a powerful new idea: the pipe.
 
 ### Combining multiple operations with the pipe
 
-It looks like we have been creating and naming several intermediate files in our anlysis, even though we didn't care about them. Naming things is hard, so this slows down our analysis. 
+It looks like we have been creating and naming several intermediate files in our 
+analysis, even though we didn't care about them. Naming things is hard, so this 
+slows down our analysis. 
 
 There's another way to tackle the same problem with the pipe, `%>%`:
 
@@ -575,21 +535,23 @@ dvst %>%
 ```
 
 This focuses on the transformations, not what's being transformed. 
-You can read it as a series of imperative statements: group, then summarise, then filter, 
+You can read it as a series of imperative statements: group, then summarise, then 
+filter, 
 where `%>%` stands for "then".
 
-Behind the scenes, `x %>% f(y)` turns into `f(x, y)`, and `x %>% f(y) %>% g(z)` turns into 
-`g(f(x, y), z)` and so on.
+Behind the scenes, `x %>% f(y)` turns into `f(x, y)`, and `x %>% f(y) %>% g(z)` 
+turns into `g(f(x, y), z)` and so on.
 
-Working with the pipe is one of the key criteria for belonging to the tidyverse. The only exception is 
-ggplot2: it was written before the pipe was discovered. However, the next iteration of ggplot2, 
-ggvis, will use the pipe. 
+Working with the pipe is one of the key criteria for belonging to the tidyverse. 
+The only exception is `ggplot2`: it was written before the pipe was discovered. 
+However, the next iteration of `ggplot2`, `ggvis`, is supposed to use the pipe. 
 
 > ## RStudio Tip
-> A shortcut for %>% is available in the newest RStudio releases under the keybinding 
+> A shortcut for `%>%` is available in the newest RStudio releases under the keybinding 
 > CTRL + SHIFT + M (or CMD + SHIFT + M for OSX).  
-> You can also review the set of available keybindings when within RStudio with ALT + SHIFT + K.
-> ```
+> You can also review the set of available keybindings when within RStudio with 
+> the ALT + SHIFT + K.
+> 
 {: .callout}
 
 
@@ -604,8 +566,8 @@ ggvis, will use the pipe.
 >
 {: .callout}
 
-Finally, one of the best features of dplyr is 
-that all of these same methods also work with database connections. For example, you can manipulate a SQLite 
+Finally, one of the best features of dplyr is that all of these same methods 
+also work with database connections. For example, you can manipulate a SQLite 
 database with all of the same verbs we’ve used here.
 
 > ## Extra reading: tidy data

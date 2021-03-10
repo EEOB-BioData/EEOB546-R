@@ -137,7 +137,7 @@ Let's start with the workhorse of R: atomic vectors.
 
 ## Subsetting lists: three functions: `[`, `[[`, and `$`.
 
-### 1. Use `[...]` to return a subset of a list as a list. 
+#### 1. Use `[...]` to return a subset of a list as a list. 
 If you want to *subset* a list, but not
 *extract* an element, then you will likely use `[...]`.
 
@@ -174,7 +174,7 @@ If you want to *subset* a list, but not
 > {: .output}
 {: .solution}
 
-### 2. Use `[[...]]` to *extract* an individual element of a list.
+#### 2. Use `[[...]]` to *extract* an individual element of a list.
 
 You **can't** extract more than one element at once **nor** use `[[ ]]` to skip elements:
 
@@ -251,7 +251,7 @@ You **can't** extract more than one element at once **nor** use `[[ ]]` to skip 
 > {: .error}
 {:.solution}
 
-### 3. Use `$...` to extract an element of a list by its name (you don't need "" for the name):
+#### 3. Use `$...` to extract an element of a list by its name (you don't need "" for the name):
 
 > ## Example
 > 
@@ -293,97 +293,106 @@ You **can't** extract more than one element at once **nor** use `[[ ]]` to skip 
 Remember the data frames are lists underneath the hood, so similar rules
 apply. However they are also two dimensional objects!
 
-### Subset columns from a dataset using `[...]`. 
+#### Subset columns from a dataset using `[...]`. 
 Remember the data frames are lists underneath the hood, so similar rules apply.  
 However, the resulting object will be a data frame:
 
+>  ## Example
+>
+> 
+> ~~~
+> df <- data.frame(
+>   x = 1:3,
+>   y = c("a", "b", "c"),
+>   z = c(TRUE,FALSE,TRUE),
+>   stringsAsFactors = FALSE)
+> str(df)
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> 'data.frame':	3 obs. of  3 variables:
+>  $ x: int  1 2 3
+>  $ y: chr  "a" "b" "c"
+>  $ z: logi  TRUE FALSE TRUE
+> ~~~
+> {: .output}
+> 
+> 
+> 
+> ~~~
+> df[1]
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+>   x
+> 1 1
+> 2 2
+> 3 3
+> ~~~
+> {: .output}
+{:.solution}
 
-~~~
-df <- data.frame(
-  x = 1:3,
-  y = c("a", "b", "c"),
-  z = c(TRUE,FALSE,TRUE),
-  stringsAsFactors = FALSE)
-str(df)
-~~~
-{: .language-r}
+#### Subset cells from a dataset using `[...]` with two <sets of> numbers:
 
+> ## Example
+>
+> The first argument corresponds to rows and the second to columns (either or both of them can be skipped!):
+> 
+> 
+> ~~~
+> df[1:2,2:3]
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+>   y     z
+> 1 a  TRUE
+> 2 b FALSE
+> ~~~
+> {: .output}
+> 
+> If we subset a single row, the result will be a data frame (because the elements are mixed types):
+> 
+> 
+> ~~~
+> df[3,]
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+>   x y    z
+> 3 3 c TRUE
+> ~~~
+> {: .output}
+> 
+> But for a single column the result will be a vector (this can be changed with the third argument, `drop = FALSE`).
+> 
+> 
+> ~~~
+> df[,3]
+> ~~~
+> {: .language-r}
+> 
+> 
+> 
+> ~~~
+> [1]  TRUE FALSE  TRUE
+> ~~~
+> {: .output}
+> 
+{:.solution}
 
-
-~~~
-'data.frame':	3 obs. of  3 variables:
- $ x: int  1 2 3
- $ y: chr  "a" "b" "c"
- $ z: logi  TRUE FALSE TRUE
-~~~
-{: .output}
-
-
-
-~~~
-df[1]
-~~~
-{: .language-r}
-
-
-
-~~~
-  x
-1 1
-2 2
-3 3
-~~~
-{: .output}
-### Subset cells from a dataset using `[...]` with two <sets of> numbers:
-The first argument corresponds to rows and the second to columns (either or both of them can be skipped!):
-
-
-~~~
-df[1:2,2:3]
-~~~
-{: .language-r}
-
-
-
-~~~
-  y     z
-1 a  TRUE
-2 b FALSE
-~~~
-{: .output}
-
-If we subset a single row, the result will be a data frame (because the elements are mixed types):
-
-
-~~~
-df[3,]
-~~~
-{: .language-r}
-
-
-
-~~~
-  x y    z
-3 3 c TRUE
-~~~
-{: .output}
-
-But for a single column the result will be a vector (this can be changed with the third argument, `drop = FALSE`).
-
-
-~~~
-df[,3]
-~~~
-{: .language-r}
-
-
-
-~~~
-[1]  TRUE FALSE  TRUE
-~~~
-{: .output}
-
-### Extract a single column using `[[...]]` or `$...` with the column name:
+#### Extract a single column using `[[...]]` or `$...` with the column name:
 
 
 ~~~

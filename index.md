@@ -16,6 +16,23 @@ book by [Vince Buffalo](https://github.com/vsbuffalo), the [Advanced R](http://a
 by [Hadley Wickham](http://hadley.nz/), and the [R for Data Science](http://r4ds.had.co.nz/) book by 
 [Garrett Grolemund](https://github.com/garrettgman) and [Hadley Wickham](http://hadley.nz/).
 
+### What is R?
+- R is a free language and environment for statistical computing and graphics
+- R is an interpreted language, not a compiled one, meaning that all commands 
+typed on the keyboard are directly executed without requiring to build a complete 
+program.
+- R has existed for over 30 years
+- R is modular — most functionality is from add-on packages.
+
+> ## More technical aspects of R
+> As a programming language, R adopts syntax and grammar that differ from 
+> many other languages: objects in R are ‘vectors’, and functions are 
+> ‘vectorized’ to operate on all elements of the object; R objects have 
+> ‘copy-on-modify’ and ‘call-by-value’ semantics; common paradigms in other 
+> languages, such as the ‘for’ loop, are encountered less commonly in R.
+{: .solution}
+
+
 ## Why R?
 
 ![IEEE Spectrum ranking](./img/ranking18.png)
