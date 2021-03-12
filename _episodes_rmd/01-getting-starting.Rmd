@@ -33,7 +33,8 @@ knitr_fig_path("01-")
 Science is a multi-step process: once you've designed an experiment and collected
 data, the real fun begins **(but remember R.A.Fisher)**! Here we will explore R as
 a tool to organize raw data, perform exploratory analyses, and learn how to plot 
-results graphically. But to start, we will review how to interact with R and use the RStudio.
+results graphically. But to start, we will review how to interact with R and use 
+the RStudio.
 
 ## Before Starting This Lesson
 
